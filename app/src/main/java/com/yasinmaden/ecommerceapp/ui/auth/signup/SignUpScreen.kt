@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -29,6 +30,7 @@ import com.yasinmaden.ecommerceapp.ui.components.LoadingBar
 import com.yasinmaden.ecommerceapp.ui.auth.signup.SignUpContract.UiAction
 import com.yasinmaden.ecommerceapp.ui.auth.signup.SignUpContract.UiEffect
 import com.yasinmaden.ecommerceapp.ui.auth.signup.SignUpContract.UiState
+import com.yasinmaden.ecommerceapp.ui.theme.Pink80
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -80,10 +82,11 @@ fun SignUpContent(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Sign Up",
+                text = "Đăng ký",
                 style = MaterialTheme.typography.titleLarge,
                 fontSize = 30.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = Pink80
             )
 
             OutlinedTextField(
@@ -100,6 +103,7 @@ fun SignUpContent(
                 onValueChange = { onAction(UiAction.OnPasswordChange(it)) },
                 label = { Text(text = "Password", fontSize = 13.sp) },
                 singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
                     .padding(top = 16.dp)
                     .fillMaxWidth()
@@ -114,7 +118,7 @@ fun SignUpContent(
                 .padding(top = 16.dp) // Optional padding for spacing
                 .size(height = 75.dp, width = 150.dp)
         ) {
-            Text(text = "Sign Up", fontSize = 17.sp, style = MaterialTheme.typography.titleLarge)
+            Text(text = "Đăng ký", fontSize = 17.sp, style = MaterialTheme.typography.titleLarge)
         }
     }
 

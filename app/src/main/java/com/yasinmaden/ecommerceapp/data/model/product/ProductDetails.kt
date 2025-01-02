@@ -9,7 +9,7 @@ data class ProductDetails(
     val id: String = "",
     val images: List<String> = emptyList(),
     val minimumOrderQuantity: Int = 0,
-    val price: Double = 0.0,
+    val price: Int = 0,
     val rating: Double = 0.0,
     val returnPolicy: String = "",
     val reviews: List<Review> = emptyList(),
@@ -21,5 +21,7 @@ data class ProductDetails(
     val title: String = "",
     val warrantyInformation: String = "",
     val weight: Int = 0,
-    var isFavorite: Boolean = false
+    var isFavorite: Boolean = false,
+    var isInCart: Boolean = false,
+    var quantity: Int = 1
 )

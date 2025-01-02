@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -38,7 +39,6 @@ import com.yasinmaden.ecommerceapp.ui.auth.forgot.ForgotContract.UiEffect
 import com.yasinmaden.ecommerceapp.ui.auth.forgot.ForgotContract.UiState
 import com.yasinmaden.ecommerceapp.ui.components.EmptyScreen
 import com.yasinmaden.ecommerceapp.ui.components.LoadingBar
-import com.yasinmaden.ecommerceapp.ui.theme.Gray
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 

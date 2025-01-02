@@ -11,7 +11,9 @@ object HomeContract {
         val currentTab: BottomBarScreen = BottomBarScreen.Home,
         val products: List<ProductDetails> = emptyList(),
         val product: ProductDetails = ProductDetails(),
-        val brand: List<String> = emptyList()
+        val brand: List<String> = emptyList(),
+        val title: List<String> = emptyList(),
+        val isSearchEmpty: Boolean = false
     )
 
     sealed class UiAction {
@@ -19,7 +21,8 @@ object HomeContract {
         data class OnBrandSelected(val brand: String) : UiAction()
         data class OnProductSelected(val product: ProductDetails) : UiAction()
         data class OnFavoriteClicked(val product: ProductDetails) : UiAction()
-
+        data class OnSearchSelected(val title: String):UiAction()
+        data class OnCartClicked(val product: ProductDetails) : UiAction()
     }
 
     sealed class UiEffect {

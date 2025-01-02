@@ -13,6 +13,9 @@ interface DummyAPIService {
     @GET("ShineOn/products")
     suspend fun getProductsByBrand(@Query("brand") brandName: String):  List<ProductDetails>
 
+    @GET("ShineOn/products")
+    suspend fun getProductsByName(@Query("title") productName: String):  List<ProductDetails>
+
     @GET("ShineOn/products/{id}")
     suspend fun getProductById(@Path("id") id: Int): ProductDetails
 

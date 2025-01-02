@@ -11,7 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.yasinmaden.ecommerceapp.ui.components.BottomBarScreen
-import com.yasinmaden.ecommerceapp.ui.components.ScreenContent
+import com.yasinmaden.ecommerceapp.ui.cart.CartScreen
+import com.yasinmaden.ecommerceapp.ui.cart.CartViewModel
 import com.yasinmaden.ecommerceapp.ui.detail.DetailScreen
 import com.yasinmaden.ecommerceapp.ui.detail.DetailViewModel
 import com.yasinmaden.ecommerceapp.ui.home.HomeScreen
@@ -56,9 +57,14 @@ fun HomeNavGraph(
             )
         }
         composable(route = BottomBarScreen.Cart.route) {
-            ScreenContent(
-                name = BottomBarScreen.Cart.route,
-                onClick = { }
+            val viewModel: CartViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val uiEffect = viewModel.uiEffect
+            CartScreen(
+                uiState = uiState,
+                uiEffect = uiEffect,
+                onAction = viewModel::onAction,
+                navController = navController
             )
         }
         composable(route = BottomBarScreen.Profile.route) {
@@ -97,20 +103,12 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
                 productId = itemId.toInt()
             )
         }
-        composable(route = DetailsScreen.Overview.route) {
-            ScreenContent(name = DetailsScreen.Overview.route) {
-                navController.popBackStack(
-                    route = DetailsScreen.Information.route,
-                    inclusive = false
-                )
-            }
-        }
     }
 }
 
 sealed class DetailsScreen(val route: String) {
     data object Information : DetailsScreen(route = "INFORMATION")
-    data object Overview : DetailsScreen(route = "OVERVIEW")
+    data object Cart : DetailsScreen(route = "CART")
     //data object Review : DetailsScreen(route = "REVIEW")
 
 }

@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -50,6 +51,8 @@ import com.yasinmaden.ecommerceapp.ui.components.LoadingBar
 import com.yasinmaden.ecommerceapp.ui.theme.DarkGray
 import com.yasinmaden.ecommerceapp.ui.theme.GoogleButtonColor
 import com.yasinmaden.ecommerceapp.ui.theme.Gray
+import com.yasinmaden.ecommerceapp.ui.theme.Pink40
+import com.yasinmaden.ecommerceapp.ui.theme.Pink80
 import com.yasinmaden.ecommerceapp.ui.theme.Red
 import com.yasinmaden.ecommerceapp.ui.theme.White
 import kotlinx.coroutines.flow.Flow
@@ -132,11 +135,12 @@ fun LoginContent(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Welcome",
-                style = MaterialTheme.typography.titleLarge
+                text = "Chào mừng",
+                style = MaterialTheme.typography.titleLarge,
+                color = Pink80
             )
             Text(
-                text = "Please enter your data to continue",
+                text = "Hãy nhập tài khoản của bạn để tiếp tục",
                 fontSize = 15.sp,
                 style = MaterialTheme.typography.bodySmall,
                 color = Gray
@@ -163,21 +167,26 @@ fun LoginContent(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
-
+                visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
                     .padding(top = 16.dp)
                     .fillMaxWidth()
             )
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(
-                    text = "Join Us!",
-                    fontSize = 15.sp,
-                    color = DarkGray,
+                Box(
                     modifier = Modifier
-                        .padding(top = 8.dp)
-                        .clickable { onAction(UiAction.OnSignUpClick) }
-                )
+                        .fillMaxWidth()
+                        .padding(top = 16.dp), // Đảm bảo có khoảng cách nếu cần
+                    contentAlignment = Alignment.Center // Căn giữa nội dung bên trong
+                ) {
+                    Text(
+                        text = "Tạo tài khoản",
+                        fontSize = 15.sp,
+                        color = Pink80,
+                        modifier = Modifier.clickable { onAction(UiAction.OnSignUpClick) }
+                    )
+                }
 //                Text(
 //                    text = "Forgot Password?",
 //                    fontSize = 15.sp,
@@ -240,7 +249,7 @@ fun LoginContent(
                     .fillMaxWidth()
                     .size(height = 75.dp, width = 150.dp)
             ) {
-                Text(text = "Login", fontSize = 17.sp, style = MaterialTheme.typography.titleLarge)
+                Text(text = "Đăng nhập", fontSize = 17.sp, style = MaterialTheme.typography.titleLarge)
             }
 
             Spacer(modifier = Modifier.height(16.dp)) // Thêm khoảng cách giữa hai nút
@@ -251,7 +260,7 @@ fun LoginContent(
                     .fillMaxWidth()
                     .size(height = 75.dp, width = 150.dp)
             ) {
-                Text("Guest Login",fontSize = 17.sp, style = MaterialTheme.typography.titleLarge)
+                Text("Đăng nhập tài khoản khách",fontSize = 17.sp, style = MaterialTheme.typography.titleLarge)
             }
         }
     }

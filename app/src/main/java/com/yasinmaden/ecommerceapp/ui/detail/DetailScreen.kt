@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -91,12 +92,10 @@ fun DetailContent(
         ProductDetailsScreen(
             product = uiState.product,
             onBack = { navController.popBackStack() },
-            onToggleFavorite = { onAction(DetailContract.UiAction.OnFavoriteClicked(uiState.product)) }
+            onToggleFavorite = { onAction(DetailContract.UiAction.OnFavoriteClicked(uiState.product)) },
+            onCart ={onAction(DetailContract.UiAction.OnCartClicked(uiState.product))}
         )
-
-
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -104,12 +103,13 @@ fun DetailContent(
 fun ProductDetailsScreen(
     product: ProductDetails,
     onBack: () -> Unit,
-    onToggleFavorite: () -> Unit
+    onToggleFavorite: () -> Unit,
+    onCart: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Product Details") },
+                title = { Text(text = "Chi tiết sản phẩm") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
@@ -118,14 +118,37 @@ fun ProductDetailsScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onToggleFavorite,
-                containerColor = if (product.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.BottomEnd // Đặt chúng ở góc dưới bên phải
             ) {
-                Icon(
-                    imageVector = if (product.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = if (product.isFavorite) "Remove from wishlist" else "Add to wishlist"
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.BottomEnd) // Đặt chúng ở góc dưới bên phải
+                ) {
+                    // Icon Wishlist ở dưới cùng bên trái
+                    FloatingActionButton(
+                        onClick = onToggleFavorite,
+                        containerColor = if (product.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                    ) {
+                        Icon(
+                            imageVector = if (product.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = if (product.isFavorite) "Xoá khỏi yêu thích" else "Thêm vào yêu thích"
+                        )
+                    }
+
+                    // Icon Cart ở bên phải
+                    FloatingActionButton(
+                        onClick = onCart,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Thêm vào giỏ hàng"
+                        )
+                    }
+                }
             }
         }
     ) { paddingValues ->
@@ -159,12 +182,12 @@ fun ProductDetailsScreen(
                     modifier = Modifier.padding(16.dp)
                 )
                 Text(
-                    text = "$${product.price}",
+                    text = "${product.price}.000 VNĐ",
                     style = MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.primary),
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                 )
                 Text(
-                    text = if (product.stock > 0) "In stock" else "Out of stock",
+                    text = if (product.stock > 0) "Còn hàng" else "Hết hàng",
                     style = MaterialTheme.typography.bodyMedium.copy(color = if (product.stock > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error),
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                 )
@@ -187,17 +210,17 @@ fun ProductDetailsScreen(
             // Additional Info
             item {
                 Text(
-                    text = "Brand: ${product.brand}",
+                    text = "Thương hiệu: ${product.brand}",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 16.dp)
                 )
                 Text(
-                    text = "Category: ${product.category}",
+                    text = "Phân loại: ${product.category}",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 16.dp)
                 )
                 Text(
-                    text = "Weight: ${product.weight}g",
+                    text = "Khối lượng: ${product.weight}g",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                 )
@@ -206,7 +229,7 @@ fun ProductDetailsScreen(
             // Shipping Information
             item {
                 Text(
-                    text = "Shipping Information: ${product.shippingInformation}",
+                    text = "Thời gian vận chuyển: ${product.shippingInformation}",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -215,7 +238,7 @@ fun ProductDetailsScreen(
             // Warranty Information
             item {
                 Text(
-                    text = "Warranty: ${product.warrantyInformation}",
+                    text = "Bảo hành: ${product.warrantyInformation}",
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -236,7 +259,7 @@ fun HorizontalImageCarousel(images: List<String>) {
                 painter = rememberAsyncImagePainter(imageUrl),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(200.dp)
+                    .size(465.dp)
                     .clip(MaterialTheme.shapes.medium)
             )
         }
@@ -249,7 +272,7 @@ fun RatingBar(rating: Double, modifier: Modifier = Modifier) {
         repeat(5) { index ->
             Icon(
                 imageVector = if (index < rating.toInt()) Icons.Default.Star else Icons.Default.Check,
-                contentDescription = "Rating",
+                contentDescription = "Đánh giá",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )

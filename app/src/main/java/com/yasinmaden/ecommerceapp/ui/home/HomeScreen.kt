@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -27,12 +30,16 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,7 +52,8 @@ import com.yasinmaden.ecommerceapp.ui.components.EmptyScreen
 import com.yasinmaden.ecommerceapp.ui.components.LoadingBar
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 @Composable
 fun HomeScreen(
     uiState: HomeContract.UiState,
@@ -82,6 +90,7 @@ fun HomeContent(
     uiState: HomeContract.UiState,
     onAction: (HomeContract.UiAction) -> Unit
 ) {
+    var searchQuery by remember { mutableStateOf("") }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -91,17 +100,79 @@ fun HomeContent(
         ) {
         Column {
             WelcomeSection()
-            SearchBar()
-            ChooseBrandSection(
-                uiState = uiState,
-                onAction = onAction
+            SearchBar(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                onSearch = {
+                    if (searchQuery.isNotBlank()) {
+                        // Gửi hành động tìm kiếm
+                        onAction(HomeContract.UiAction.OnSearchSelected(searchQuery))
+                    }
+                }
+
             )
-            ProductSection(
-                uiState = uiState,
-                onAction = onAction
-            )
+            if (uiState.isSearchEmpty) {
+                // Hiển thị thông báo không tìm thấy
+                Text(
+                    text = "Không tìm thấy sản phẩm \"$searchQuery\"",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(16.dp),
+                    color = MaterialTheme.colorScheme.error
+                )
+            } else {
+                ChooseBrandSection(
+                    uiState = uiState,
+                    onAction = onAction
+                )
+                ProductSection(
+                    uiState = uiState,
+                    onAction = onAction
+                )
+            }
+
         }
     }
+}
+
+@Composable
+fun SearchBar(
+    value: String,
+    onValueChange: (String) -> Unit,
+    onSearch: () -> Unit
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        placeholder = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_search),
+                    contentDescription = "Search"
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("Tìm Kiếm...")
+            }
+        },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Search
+        ),
+        keyboardActions = KeyboardActions(
+            onSearch = { onSearch() } // Gửi hành động tìm kiếm khi nhấn Enter
+        ),
+        trailingIcon = {
+            IconButton(onClick = onSearch) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_search),
+                    contentDescription = "Search"
+                )
+            }
+        }
+    )
 }
 
 @Composable
@@ -115,7 +186,7 @@ fun ChooseBrandSection(
             .padding(16.dp)
     ) {
         Text(
-            text = "Choose Brand",
+            text = "Chọn thương hiệu",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
@@ -188,29 +259,51 @@ fun ProductCard(
                     contentScale = ContentScale.Crop
                 )
             }
-            Text(
-                text = product.title,
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1, // Limit to 1 line if necessary
-                overflow = TextOverflow.Ellipsis, // Ellipsis if text is too long
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-            )
 
-            // Price text below the title
-            Text(
-                text = product.price.toString(),
-                style = MaterialTheme.typography.titleSmall,
+            // Row for Title, Price and Icon
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            )
+                    .padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start // Title and price on the left
+            ) {
+                // Column for Title and Price (one above the other)
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    // Title text
+                    Text(
+                        text = product.title,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 1, // Limit to 1 line if necessary
+                        overflow = TextOverflow.Ellipsis,
+                    )
+
+                    // Price text
+                    Text(
+                        text = product.price.toString() + ".000 VNĐ",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                }
+
+                IconButton(
+                    onClick = { onAction(HomeContract.UiAction.OnCartClicked(product))}
+                ){
+                Icon(
+                    ImageVector.vectorResource(R.drawable.cart), // Example icon
+                    contentDescription = "Icon",
+                    modifier = Modifier.size(20.dp) // Adjust size of icon
+                )}
+            }
         }
+
+        // Favorite Icon
         IconButton(
             onClick = { onAction(HomeContract.UiAction.OnFavoriteClicked(product)) },
             modifier = Modifier
-                .align(Alignment.TopEnd)
+                .align(Alignment.TopStart)
                 .padding(8.dp)
         ) {
             Icon(
@@ -225,6 +318,7 @@ fun ProductCard(
     }
 }
 
+
 @Composable
 fun ProductSection(
     uiState: HomeContract.UiState,
@@ -235,7 +329,7 @@ fun ProductSection(
             .fillMaxSize()
     ) {
         Text(
-            text = "New Arrival",
+            text = "Sản phẩm bán chạy",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
         )
@@ -266,7 +360,6 @@ fun ProductSection(
     }
 }
 
-
 @Composable
 fun WelcomeSection() {
     Column(
@@ -280,29 +373,6 @@ fun WelcomeSection() {
 }
 
 @Composable
-fun SearchBar() {
-    OutlinedTextField(
-        value = "",
-        onValueChange = {},
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 0.dp, top = 0.dp, start = 16.dp, end = 16.dp),
-        placeholder = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_search),
-                    contentDescription = "Search"
-                )
-                Spacer(Modifier.padding(8.dp))
-                Text("Search...")
-            }
-
-        }
-    )
-}
-
-
-@Composable
 @Preview(showBackground = true)
 fun PreviewApp() {
     val sampleCategories = listOf("Electronics", "Clothing", "Books", "Toys")
@@ -312,14 +382,14 @@ fun PreviewApp() {
             id = "3",
             title = "Headphones",
             thumbnail = "https://via.placeholder.com/150",
-            price = 99.99,
+            price = 99,
             isFavorite = false
         ),
         ProductDetails(
             id = "4",
             title = "Camera",
             thumbnail = "https://via.placeholder.com/150",
-            price = 499.0,
+            price = 499,
             isFavorite = true
         )
     )

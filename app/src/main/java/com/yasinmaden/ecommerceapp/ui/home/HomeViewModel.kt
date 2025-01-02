@@ -3,6 +3,7 @@ package com.yasinmaden.ecommerceapp.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.yasinmaden.ecommerceapp.common.Resource
 import com.yasinmaden.ecommerceapp.data.model.product.ProductDetails
@@ -43,12 +44,21 @@ class HomeViewModel @Inject constructor(
             is HomeContract.UiAction.OnBrandSelected -> viewModelScope.launch {
                 loadProductsByBrand(uiAction.brand)
                 loadFavoriteStates()
+                loadCartStates()
             }
 
             is HomeContract.UiAction.OnProductSelected -> viewModelScope.launch {
                 emitUiEffect(HomeContract.UiEffect.NavigateToProductDetails(uiAction.product))
                 loadProductDetails(uiAction.product.id.toInt())
             }
+
+            is HomeContract.UiAction.OnSearchSelected ->viewModelScope.launch {
+                loadProductsByName(uiAction.title)
+                loadFavoriteStates()
+                loadCartStates()
+            }
+
+            is HomeContract.UiAction.OnCartClicked-> onCartClicked(uiAction.product)
 
             is HomeContract.UiAction.OnFavoriteClicked -> onFavoriteClicked(uiAction.product)
         }
@@ -63,7 +73,7 @@ class HomeViewModel @Inject constructor(
                 loadFavoriteStates()
 
             } catch (e: Exception) {
-                Log.e("DataLoad", "Veriler yüklenirken hata oluştu: ${e.message}")
+                Log.e("DataLoad", "${e.message}")
             }
         }
     }
@@ -101,6 +111,38 @@ class HomeViewModel @Inject constructor(
 
     }
 
+    private fun onCartClicked(product: ProductDetails) {
+        val updatedProduct = product.copy(isInCart = !product.isInCart)
+        updateUiState {
+            copy(
+                products = products.map { product ->
+                    if (product.id == updatedProduct.id) {
+                        updatedProduct
+                    } else {
+                        product
+                    }
+                }
+            )
+        }
+
+        if (updatedProduct.isInCart) {
+            firebaseAuth.currentUser?.let {
+                firebaseDatabaseRepository.addCartItem(
+                    user = it,
+                    product = updatedProduct
+                )
+            }
+        } else {
+            firebaseAuth.currentUser?.let {
+                firebaseDatabaseRepository.removeCartItem(
+                    user = it,
+                    product = updatedProduct
+                )
+            }
+        }
+
+    }
+
     private suspend fun loadProductsByBrand(brandName: String): Resource< List<ProductDetails>> {
         updateUiState { copy(isLoadingProducts = true) }
         when (val request = productRepository.getProductsByBrand(brandName)) {
@@ -116,6 +158,33 @@ class HomeViewModel @Inject constructor(
 
             is Resource.Error -> {
                 updateUiState { copy(isLoading = false) }
+                return Resource.Error(exception = request.exception)
+            }
+        }
+    }
+
+    private suspend fun loadProductsByName(productName: String): Resource< List<ProductDetails>> {
+        updateUiState { copy(isLoadingProducts = true) }
+        when (val request = productRepository.getProductsByName(productName)) {
+            is Resource.Success -> {
+                val isEmpty = request.data.isEmpty()
+                updateUiState {
+                    copy(
+                        products = request.data,
+                        isLoadingProducts = false,
+                        isSearchEmpty = isEmpty
+                    )
+                }
+                return Resource.Success(data = request.data)
+            }
+
+            is Resource.Error -> {
+                updateUiState {
+                    copy(
+                        isLoadingProducts = false, // Sửa từ isLoading thành isLoadingProducts
+                        isSearchEmpty = true // Cập nhật trạng thái để hiển thị thông báo
+                    )
+                }
                 return Resource.Error(exception = request.exception)
             }
         }
@@ -163,6 +232,26 @@ class HomeViewModel @Inject constructor(
                         val isFavoriteInWishlist = wishlist.any { item -> item.id == product.id && item.isFavorite }
                         if (isFavoriteInWishlist) {
                             product.copy(isFavorite = true) // isFavorite'i true yap
+                        } else {
+                            product
+                        }
+                    }
+                    copy(products = updatedProducts)
+                }
+            },
+            onError = {}
+        )
+    }
+
+    private fun loadCartStates() {
+        firebaseDatabaseRepository.getAllCart(
+            user = firebaseAuth.currentUser!!,
+            callback = { cartItems ->
+                updateUiState { // uiState güncelleme işlemi
+                    val updatedProducts = products.map { product ->
+                        val isProductInCart = cartItems.any { item -> item.id == product.id && item.isInCart }
+                        if (isProductInCart) {
+                            product.copy(isInCart = true) // isFavorite'i true yap
                         } else {
                             product
                         }

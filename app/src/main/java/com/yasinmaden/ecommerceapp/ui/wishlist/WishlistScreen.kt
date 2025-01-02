@@ -37,7 +37,7 @@ fun WishlistScreen(
     uiState: WishlistContract.UiState,
     uiEffect: Flow<WishlistContract.UiEffect>,
     onAction: (WishlistContract.UiAction) -> Unit,
-    navController: NavHostController,
+    navController: NavHostController
 ) {
     LaunchedEffect(Unit) {
         uiEffect.collect {

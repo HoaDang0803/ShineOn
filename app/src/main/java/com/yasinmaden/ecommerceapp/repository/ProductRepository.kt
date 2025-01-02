@@ -39,4 +39,13 @@ class ProductRepository @Inject constructor(
         }
         return Resource.Success(data = response)
     }
+
+    suspend fun getProductsByName(productName: String):Resource<List<ProductDetails>>{
+        val response = try {
+            dummyAPIService.getProductsByName(productName)
+        }catch (e: Exception){
+            return Resource.Error(exception = e)
+        }
+        return Resource.Success(data = response)
+    }
 }

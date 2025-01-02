@@ -9,22 +9,22 @@ sealed class BottomBarScreen(
 ) {
     data object Home : BottomBarScreen(
         route = "HOME",
-        title = "Home",
+        title = "Trang chủ",
         iconRes = R.drawable.home
     )
     data object Wishlist : BottomBarScreen(
         route = "WISHLIST",
-        title = "Wishlist",
+        title = "Yêu thích",
         iconRes = R.drawable.favorites
     )
     data object Cart : BottomBarScreen(
         route = "CART",
-        title = "Cart",
+        title = "Giỏ hàng",
         iconRes = R.drawable.cart
     )
     data object Profile : BottomBarScreen(
         route = "PROFILE",
-        title = "Profile",
+        title = "Cá nhân",
         iconRes = R.drawable.person
     )
 }

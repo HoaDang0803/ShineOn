@@ -57,11 +57,10 @@ class DetailViewModel @Inject constructor(
     fun onAction(uiAction: DetailContract.UiAction) {
         when (uiAction) {
             is DetailContract.UiAction.OnFavoriteClicked -> onFavoriteClicked(uiAction.product)
-
+            is DetailContract.UiAction.OnCartClicked -> onCartClicked(uiAction.product)
         }
 
     }
-
 
     private fun onFavoriteClicked(product: ProductDetails) {
         val updatedProduct = product.copy(isFavorite = !product.isFavorite)
@@ -95,7 +94,38 @@ class DetailViewModel @Inject constructor(
 
     }
 
-    private fun updateUiState(block: DetailContract.UiState.() -> DetailContract.UiState) {
+    private fun onCartClicked(product: ProductDetails) {
+        val updatedProduct = product.copy(isFavorite = !product.isInCart)
+        updateUiState {
+            copy(
+                products = products.map { product ->
+                    if (product.id == updatedProduct.id) {
+                        updatedProduct
+                    } else {
+                        product
+                    }
+                }
+            )
+        }
+
+        if (updatedProduct.isInCart) {
+            firebaseAuth.currentUser?.let {
+                firebaseDatabaseRepository.addCartItem(
+                    user = it,
+                    product = updatedProduct
+                )
+            }
+        } else {
+            firebaseAuth.currentUser?.let {
+                firebaseDatabaseRepository.removeCartItem(
+                    user = it,
+                    product = updatedProduct
+                )
+            }
+        }
+    }
+
+        private fun updateUiState(block: DetailContract.UiState.() -> DetailContract.UiState) {
         _uiState.update(block)
     }
 

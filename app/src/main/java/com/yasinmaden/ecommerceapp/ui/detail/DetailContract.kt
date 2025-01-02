@@ -11,6 +11,7 @@ object DetailContract {
     )
     sealed class UiAction {
         data class OnFavoriteClicked(val product: ProductDetails) : UiAction()
+        data class OnCartClicked(val product: ProductDetails) : UiAction()
     }
     sealed class UiEffect {
     }
