@@ -1,3 +1,4 @@
+
 package com.yasinmaden.ecommerceapp.ui.wishlist
 
 import androidx.lifecycle.ViewModel
@@ -16,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WishlistViewModel @Inject constructor(
     private val firebaseDatabaseRepository: FirebaseDatabaseRepository,
-    private val firebaseAuth: FirebaseAuth
+    firebaseAuth: FirebaseAuth
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(WishlistContract.UiState())
     val uiState: StateFlow<WishlistContract.UiState> = _uiState.asStateFlow()
