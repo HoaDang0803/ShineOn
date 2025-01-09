@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -48,13 +49,11 @@ import com.yasinmaden.ecommerceapp.ui.auth.login.LoginContract.UiEffect
 import com.yasinmaden.ecommerceapp.ui.auth.login.LoginContract.UiState
 import com.yasinmaden.ecommerceapp.ui.components.EmptyScreen
 import com.yasinmaden.ecommerceapp.ui.components.LoadingBar
-import com.yasinmaden.ecommerceapp.ui.theme.DarkGray
+import com.yasinmaden.ecommerceapp.ui.theme.DarkBlue
 import com.yasinmaden.ecommerceapp.ui.theme.GoogleButtonColor
-import com.yasinmaden.ecommerceapp.ui.theme.Gray
+import com.yasinmaden.ecommerceapp.ui.theme.LightBlue
 import com.yasinmaden.ecommerceapp.ui.theme.Pink40
-import com.yasinmaden.ecommerceapp.ui.theme.Pink80
-import com.yasinmaden.ecommerceapp.ui.theme.Red
-import com.yasinmaden.ecommerceapp.ui.theme.White
+
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -74,10 +73,6 @@ fun LoginScreen(
                 is UiEffect.NavigateToSignUp -> {
                     navController.navigate(AuthScreen.SignUp.route)
                 }
-
-//                is UiEffect.NavigateToForgotPassword -> {
-//                    navController.navigate(AuthScreen.Forgot.route)
-//                }
 
                 is UiEffect.NavigateToHome -> {
                     navController.navigate(Graph.HOME)
@@ -128,22 +123,26 @@ fun LoginContent(
 
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.TopCenter,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top, // Điều chỉnh căn dọc trong cột
             modifier = Modifier.padding(16.dp)
+                .padding(top = 180.dp)
         ) {
             Text(
-                text = "Chào mừng",
+                text = "Chào mừng bạn đến với ShineOn",
                 style = MaterialTheme.typography.titleLarge,
-                color = Pink80
+                color = DarkBlue,
+                modifier = Modifier.padding(bottom = 5.dp) // Tạo khoảng cách 5.dp
             )
+
             Text(
-                text = "Hãy nhập tài khoản của bạn để tiếp tục",
-                fontSize = 15.sp,
+                text = "Đăng nhập để tiếp tục",
+                fontSize = 13.sp,
                 style = MaterialTheme.typography.bodySmall,
-                color = Gray
+                color = LightBlue
             )
             OutlinedTextField(
                 value = uiState.email,
@@ -161,7 +160,7 @@ fun LoginContent(
             OutlinedTextField(
                 value = uiState.password,
                 onValueChange = { onAction(UiAction.OnPasswordChange(it)) },
-                label = { Text(text = "Password", fontSize = 13.sp) },
+                label = { Text(text = "Mật khẩu", fontSize = 13.sp) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
@@ -177,13 +176,13 @@ fun LoginContent(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp), // Đảm bảo có khoảng cách nếu cần
+                        .padding(top = 8.dp), // Đảm bảo có khoảng cách nếu cần
                     contentAlignment = Alignment.Center // Căn giữa nội dung bên trong
                 ) {
                     Text(
                         text = "Tạo tài khoản",
                         fontSize = 15.sp,
-                        color = Pink80,
+                        color = LightBlue,
                         modifier = Modifier.clickable { onAction(UiAction.OnSignUpClick) }
                     )
                 }
@@ -240,14 +239,16 @@ fun LoginContent(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(20.dp)
+                .padding(bottom = 80.dp),
+
             horizontalAlignment = Alignment.CenterHorizontally // Canh giữa các nút theo chiều ngang
         ) {
             Button(
                 onClick = { onAction(UiAction.OnLoginClick) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .size(height = 75.dp, width = 150.dp)
+                    .size(height = 55.dp, width = 150.dp)
             ) {
                 Text(text = "Đăng nhập", fontSize = 17.sp, style = MaterialTheme.typography.titleLarge)
             }
@@ -258,7 +259,10 @@ fun LoginContent(
                 onClick = { onAction(UiAction.OnAnonymousSignIn) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .size(height = 75.dp, width = 150.dp)
+                    .size(height = 55.dp, width = 150.dp),
+                shape = RoundedCornerShape(50.dp), // Bo tròn cả hai bên nút
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7faedd)) // Đổi màu nền thành LightBlue
+
             ) {
                 Text("Đăng nhập tài khoản khách",fontSize = 17.sp, style = MaterialTheme.typography.titleLarge)
             }

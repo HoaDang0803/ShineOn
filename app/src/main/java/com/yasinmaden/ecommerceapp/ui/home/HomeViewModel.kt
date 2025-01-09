@@ -12,6 +12,7 @@ import com.yasinmaden.ecommerceapp.repository.CategoryRepository
 import com.yasinmaden.ecommerceapp.repository.FirebaseDatabaseRepository
 import com.yasinmaden.ecommerceapp.repository.ProductRepository
 import com.yasinmaden.ecommerceapp.ui.components.BottomBarScreen
+import com.yasinmaden.ecommerceapp.ui.detail.DetailContract
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -31,13 +32,10 @@ class HomeViewModel @Inject constructor(
     private val firebaseDatabaseRepository: FirebaseDatabaseRepository,
     private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(HomeContract.UiState())
     val uiState: StateFlow<HomeContract.UiState> = _uiState.asStateFlow()
-
     private val _uiEffect by lazy { Channel<HomeContract.UiEffect>() }
     val uiEffect: Flow<HomeContract.UiEffect> by lazy { _uiEffect.receiveAsFlow() }
-
     fun onAction(uiAction: HomeContract.UiAction) {
         when (uiAction) {
             is HomeContract.UiAction.OnTabSelected -> updateSelectedTab(uiAction.screen)
@@ -64,7 +62,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-
     init {
         viewModelScope.launch {
             try {
@@ -77,7 +74,6 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
-
 
     private fun onFavoriteClicked(product: ProductDetails) {
         val updatedProduct = product.copy(isFavorite = !product.isFavorite)
@@ -112,6 +108,12 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun onCartClicked(product: ProductDetails) {
+        if (product.stock < 1) {
+            viewModelScope.launch {
+                emitUiEffect(HomeContract.UiEffect.ShowToast("Sản phẩm đã hết hàng"))
+            }
+            return
+        }
         val updatedProduct = product.copy(isInCart = !product.isInCart)
         updateUiState {
             copy(
@@ -132,15 +134,10 @@ class HomeViewModel @Inject constructor(
                     product = updatedProduct
                 )
             }
-        } else {
-            firebaseAuth.currentUser?.let {
-                firebaseDatabaseRepository.removeCartItem(
-                    user = it,
-                    product = updatedProduct
-                )
-            }
         }
-
+        viewModelScope.launch {
+            emitUiEffect(HomeContract.UiEffect.ShowToast("Đã thêm vào giỏ hàng"))
+        }
     }
 
     private suspend fun loadProductsByBrand(brandName: String): Resource< List<ProductDetails>> {

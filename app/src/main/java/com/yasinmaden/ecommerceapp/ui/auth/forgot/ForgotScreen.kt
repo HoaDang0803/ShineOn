@@ -101,7 +101,7 @@ fun ForgotContent(
         ) {
             Icon(
                 painter = painterResource(R.drawable.baseline_arrow_back_24),
-                contentDescription = "Back"
+                contentDescription = "Quay lại"
             )
         }
         Column(
@@ -119,7 +119,7 @@ fun ForgotContent(
             OutlinedTextField(
                 value = uiState.email,
                 onValueChange = { onAction(UiAction.OnEmailChange(it)) },
-                label = { Text(text = "Email Address", fontSize = 13.sp) },
+                label = { Text(text = "Địa chỉ Email", fontSize = 13.sp) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
@@ -128,8 +128,7 @@ fun ForgotContent(
                 modifier = Modifier.fillMaxWidth()
             )
             Text(
-                "Please write your email to receive a" +
-                        "\nconfirmation code to set a new password.",
+                "Mã xác nhận sẽ được gửi đến email của bạn",
                 textAlign = TextAlign.Center,
                 color = Gray,
                 fontSize = 13.sp
@@ -142,10 +141,10 @@ fun ForgotContent(
                 .align(Alignment.BottomCenter) // Align the button to the bottom center
                 .fillMaxWidth() // Make the button full width
                 .padding(top = 16.dp) // Optional padding for spacing
-                .size(height = 75.dp, width = 150.dp)
+                .size(height = 55.dp, width = 150.dp)
         ) {
             Text(
-                text = "Confirm Mail",
+                text = "Xác nhận Email",
                 fontSize = 17.sp,
                 style = MaterialTheme.typography.titleLarge
             )

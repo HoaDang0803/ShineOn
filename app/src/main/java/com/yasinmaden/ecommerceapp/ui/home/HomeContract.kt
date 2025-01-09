@@ -2,6 +2,7 @@ package com.yasinmaden.ecommerceapp.ui.home
 
 import com.yasinmaden.ecommerceapp.data.model.product.ProductDetails
 import com.yasinmaden.ecommerceapp.ui.components.BottomBarScreen
+import com.yasinmaden.ecommerceapp.ui.detail.DetailContract.UiEffect
 
 object HomeContract {
     data class UiState(
@@ -26,6 +27,7 @@ object HomeContract {
     }
 
     sealed class UiEffect {
+        data class ShowToast(val message: String) : UiEffect()
         data class NavigateTo(val route: String) : UiEffect()
         data class NavigateToProductDetails(val product: ProductDetails) : UiEffect()
     }

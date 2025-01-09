@@ -1,5 +1,6 @@
 package com.yasinmaden.ecommerceapp.ui.detail
 
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -7,6 +8,7 @@ import com.yasinmaden.ecommerceapp.common.Resource
 import com.yasinmaden.ecommerceapp.data.model.product.ProductDetails
 import com.yasinmaden.ecommerceapp.repository.FirebaseDatabaseRepository
 import com.yasinmaden.ecommerceapp.repository.ProductRepository
+import com.yasinmaden.ecommerceapp.ui.profile.ProfileContract.UiEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -30,8 +32,6 @@ class DetailViewModel @Inject constructor(
     private val _uiEffect by lazy { Channel<DetailContract.UiEffect>() }
     val uiEffect: Flow<DetailContract.UiEffect> by lazy { _uiEffect.receiveAsFlow() }
 
-
-
     fun loadProductById(id: String) {
         viewModelScope.launch {
             loadProductDetails(id)
@@ -52,7 +52,6 @@ class DetailViewModel @Inject constructor(
             }
         }
     }
-
 
     fun onAction(uiAction: DetailContract.UiAction) {
         when (uiAction) {
@@ -95,7 +94,13 @@ class DetailViewModel @Inject constructor(
     }
 
     private fun onCartClicked(product: ProductDetails) {
-        val updatedProduct = product.copy(isFavorite = !product.isInCart)
+        if (product.stock < 1) {
+            viewModelScope.launch {
+                emitUiEffect(DetailContract.UiEffect.ShowToast("Sản phẩm đã hết hàng"))
+            }
+            return
+        }
+        val updatedProduct = product.copy(isInCart = !product.isInCart)
         updateUiState {
             copy(
                 products = products.map { product ->
@@ -115,15 +120,12 @@ class DetailViewModel @Inject constructor(
                     product = updatedProduct
                 )
             }
-        } else {
-            firebaseAuth.currentUser?.let {
-                firebaseDatabaseRepository.removeCartItem(
-                    user = it,
-                    product = updatedProduct
-                )
+            viewModelScope.launch {
+                emitUiEffect(DetailContract.UiEffect.ShowToast("Đã thêm vào giỏ hàng"))
             }
         }
     }
+
 
         private fun updateUiState(block: DetailContract.UiState.() -> DetailContract.UiState) {
         _uiState.update(block)

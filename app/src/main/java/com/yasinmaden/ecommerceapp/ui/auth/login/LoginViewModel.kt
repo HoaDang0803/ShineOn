@@ -59,7 +59,7 @@ class LoginViewModel @Inject constructor(
             }
 
             is Resource.Error -> {
-                emitUiEffect(UiEffect.ShowToast(result.exception.message ?: "Error"))
+                emitUiEffect(UiEffect.ShowToast(result.exception.message ?: "Lỗi"))
             }
         }
     }
@@ -86,7 +86,7 @@ class LoginViewModel @Inject constructor(
                 emitUiEffect(UiEffect.ShowToast("Đăng nhập Guest thất bại"))
             }
         } catch (e: Exception) {
-            emitUiEffect(UiEffect.ShowToast(e.message ?: "Error"))
+            emitUiEffect(UiEffect.ShowToast(e.message ?: "Lỗi"))
         }
     }
 

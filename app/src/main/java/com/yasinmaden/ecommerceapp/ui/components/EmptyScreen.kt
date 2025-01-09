@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.yasinmaden.ecommerceapp.ui.theme.Black
+import com.yasinmaden.ecommerceapp.ui.theme.DarkBlue
 
 @Composable
 fun EmptyScreen() {
@@ -25,11 +25,11 @@ fun EmptyScreen() {
         Icon(
             modifier = Modifier.size(120.dp),
             imageVector = Icons.Default.Warning,
-            contentDescription = "Warning",
+            contentDescription = "Cảnh báo",
         )
         Text(
-            text = "No items found",
-            color = Black,
+            text = "Không tìm thấy trang",
+            color = DarkBlue,
             fontSize = 20.sp,
         )
     }

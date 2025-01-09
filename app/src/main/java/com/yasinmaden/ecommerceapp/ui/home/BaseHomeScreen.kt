@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavDestination
@@ -25,7 +26,7 @@ import com.yasinmaden.ecommerceapp.navigation.HomeNavGraph
 import com.yasinmaden.ecommerceapp.ui.components.BottomBarScreen
 import com.yasinmaden.ecommerceapp.ui.theme.NavigationItemTextColor
 import com.yasinmaden.ecommerceapp.ui.theme.NavigationItemTintColor
-import com.yasinmaden.ecommerceapp.ui.theme.White
+
 
 @Composable
 fun BaseHomeScreen(navController: NavHostController = rememberNavController()) {

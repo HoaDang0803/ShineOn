@@ -18,14 +18,14 @@ val Typography = Typography(
     titleLarge = TextStyle(
         fontFamily = InterFontFamily,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 28.sp,
-        lineHeight = 28.sp,
+        fontSize = 20.sp,
+        lineHeight = 20.sp,
         letterSpacing = 0.sp
     ),
     labelSmall = TextStyle(
         fontFamily = InterFontFamily,
         fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
+        fontSize = 10.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     )

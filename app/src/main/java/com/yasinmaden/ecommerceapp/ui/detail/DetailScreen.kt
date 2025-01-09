@@ -1,6 +1,7 @@
 package com.yasinmaden.ecommerceapp.ui.detail
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +45,10 @@ import com.yasinmaden.ecommerceapp.data.model.product.ProductDetails
 import com.yasinmaden.ecommerceapp.ui.components.EmptyScreen
 import com.yasinmaden.ecommerceapp.ui.components.LoadingBar
 import kotlinx.coroutines.flow.Flow
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import com.yasinmaden.ecommerceapp.navigation.Graph
+import com.yasinmaden.ecommerceapp.ui.profile.ProfileContract.UiEffect
 
 
 @Composable
@@ -56,7 +61,7 @@ fun DetailScreen(
     productId: Int
 ) {
     val viewModel: DetailViewModel = hiltViewModel()
-
+    val context = LocalContext.current
 
     LaunchedEffect(productId) {
         viewModel.loadProductById(productId.toString())
@@ -65,7 +70,11 @@ fun DetailScreen(
 
     LaunchedEffect(Unit) {
         uiEffect.collect { effect ->
-            TODO()
+            when (effect) {
+                is DetailContract.UiEffect.ShowToast -> {
+                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
     when {
@@ -92,8 +101,8 @@ fun DetailContent(
         ProductDetailsScreen(
             product = uiState.product,
             onBack = { navController.popBackStack() },
-            onToggleFavorite = { onAction(DetailContract.UiAction.OnFavoriteClicked(uiState.product)) },
-            onCart ={onAction(DetailContract.UiAction.OnCartClicked(uiState.product))}
+            onToggleFavorite = { onAction(DetailContract.UiAction.OnFavoriteClicked(uiState.product))},
+            onCart = { onAction(DetailContract.UiAction.OnCartClicked(uiState.product)) }
         )
     }
 }
@@ -112,7 +121,7 @@ fun ProductDetailsScreen(
                 title = { Text(text = "Chi tiết sản phẩm") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Quay lại")
                     }
                 }
             )
@@ -165,9 +174,9 @@ fun ProductDetailsScreen(
                     Image(
                         painter = rememberAsyncImagePainter(product.thumbnail),
                         contentDescription = product.title,
+                        contentScale = ContentScale.Crop, // Đảm bảo hình ảnh không bị méo
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(250.dp)
+                            .size(330.dp) // Kích thước vuông
                             .clip(MaterialTheme.shapes.medium)
                             .padding(16.dp)
                     )
@@ -259,7 +268,7 @@ fun HorizontalImageCarousel(images: List<String>) {
                 painter = rememberAsyncImagePainter(imageUrl),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(465.dp)
+                    .size(467.dp)
                     .clip(MaterialTheme.shapes.medium)
             )
         }

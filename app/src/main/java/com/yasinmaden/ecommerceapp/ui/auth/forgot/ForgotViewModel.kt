@@ -43,7 +43,7 @@ class ForgotViewModel @Inject constructor(): ViewModel() {
     private fun handleConfirmClick() {
         viewModelScope.launch {
             emitUiEffect(UiEffect.NavigateToLogin)
-            emitUiEffect(UiEffect.ShowToast("Password reset email sent"))
+            emitUiEffect(UiEffect.ShowToast("Đã gửi email đặt lại mật khẩu"))
         }
     }
 

@@ -1,6 +1,7 @@
 package com.yasinmaden.ecommerceapp.ui.home
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,10 +51,15 @@ import com.yasinmaden.ecommerceapp.data.model.product.ProductDetails
 import com.yasinmaden.ecommerceapp.navigation.DetailsScreen
 import com.yasinmaden.ecommerceapp.ui.components.EmptyScreen
 import com.yasinmaden.ecommerceapp.ui.components.LoadingBar
+import com.yasinmaden.ecommerceapp.ui.theme.BrandCardContainerColor
+import com.yasinmaden.ecommerceapp.ui.theme.ExtraLightBlue
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import com.yasinmaden.ecommerceapp.ui.detail.DetailContract
+
 @Composable
 fun HomeScreen(
     uiState: HomeContract.UiState,
@@ -61,9 +67,13 @@ fun HomeScreen(
     onAction: (HomeContract.UiAction) -> Unit,
     navController: NavHostController,
 ) {
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         uiEffect.collect { effect ->
             when (effect) {
+                is HomeContract.UiEffect.ShowToast -> {
+                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                }
                 is HomeContract.UiEffect.NavigateTo -> {
                     navController.navigate(effect.route)
                 }
@@ -186,7 +196,7 @@ fun ChooseBrandSection(
             .padding(16.dp)
     ) {
         Text(
-            text = "Chọn thương hiệu",
+            text = "Thương hiệu nổi bật",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
@@ -214,12 +224,13 @@ fun BrandCard(
         modifier = Modifier
             .wrapContentSize()
             .clickable { onAction(HomeContract.UiAction.OnBrandSelected(brandName)) },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFEAF4FF))
     ) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .padding(16.dp)
+                .padding(8.dp)
         ) {
             Text(
                 text = brandName,
@@ -291,11 +302,11 @@ fun ProductCard(
                 IconButton(
                     onClick = { onAction(HomeContract.UiAction.OnCartClicked(product))}
                 ){
-                Icon(
-                    ImageVector.vectorResource(R.drawable.cart), // Example icon
-                    contentDescription = "Icon",
-                    modifier = Modifier.size(20.dp) // Adjust size of icon
-                )}
+                    Icon(
+                        ImageVector.vectorResource(R.drawable.cart), // Example icon
+                        contentDescription = "Icon",
+                        modifier = Modifier.size(20.dp) // Adjust size of icon
+                    )}
             }
         }
 
@@ -330,8 +341,8 @@ fun ProductSection(
     ) {
         Text(
             text = "Sản phẩm bán chạy",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(start = 16.dp, bottom = 4.dp)
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(top = 16.dp, start = 16.dp, bottom = 15.dp)
         )
 
         if (uiState.isLoadingProducts) {
@@ -365,10 +376,11 @@ fun WelcomeSection() {
     Column(
         Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(14.dp)
+            .padding(top = 16.dp)
     ) {
-        Text("Hello", style = MaterialTheme.typography.headlineLarge)
-        Text("Welcome to ShineOn.", style = MaterialTheme.typography.bodyLarge)
+        Text("Xin chào,", style = MaterialTheme.typography.titleLarge)
+        Text("Chào mừng bạn đến với ShineOn!", style = MaterialTheme.typography.bodyLarge)
     }
 }
 

@@ -19,6 +19,7 @@ import com.yasinmaden.ecommerceapp.ui.home.HomeScreen
 import com.yasinmaden.ecommerceapp.ui.home.HomeViewModel
 import com.yasinmaden.ecommerceapp.ui.profile.ProfileScreen
 import com.yasinmaden.ecommerceapp.ui.profile.ProfileViewModel
+import com.yasinmaden.ecommerceapp.ui.profile.UserProfile
 import com.yasinmaden.ecommerceapp.ui.wishlist.WishlistScreen
 import com.yasinmaden.ecommerceapp.ui.wishlist.WishlistViewModel
 
@@ -71,6 +72,7 @@ fun HomeNavGraph(
             val viewModel: ProfileViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val uiEffect = viewModel.uiEffect
+            val userInfor: UserProfile
             ProfileScreen(
                 uiState = uiState,
                 uiEffect = uiEffect,

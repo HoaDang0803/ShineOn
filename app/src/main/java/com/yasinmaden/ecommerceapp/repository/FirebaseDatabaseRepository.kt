@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.yasinmaden.ecommerceapp.data.model.product.ProductDetails
+import com.yasinmaden.ecommerceapp.ui.profile.UserProfile
 import javax.inject.Inject
 
 class FirebaseDatabaseRepository @Inject constructor(
@@ -57,70 +58,59 @@ class FirebaseDatabaseRepository @Inject constructor(
             onError(DatabaseError.fromException(exception))
         }
     }
-    /*fun addCartItem(user: FirebaseUser, product: ProductDetails) {
-        val cartRef = databaseReference.child(user.uid).child("cart")
 
-        // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
-        cartRef.child(product.id).get().addOnSuccessListener { snapshot ->
-            if (snapshot.exists()) {
-                // Nếu sản phẩm đã có trong giỏ hàng, cập nhật số lượng
-                val currentQuantity = snapshot.child("quantity").getValue(Int::class.java) ?: 0
-                val updatedQuantity = currentQuantity + product.quantity
-                cartRef.child(product.id).child("quantity").setValue(updatedQuantity)
+    fun increaseCartItemQuantity(user: FirebaseUser, productId: String, quantity: Int) {
+        val cartRef = databaseReference.child(user.uid).child("cart")
+        val productRef = cartRef.child(productId).child("quantity")
+
+        productRef.get().addOnSuccessListener { snapshot ->
+            val currentQuantity = snapshot.getValue(Int::class.java) ?: 1
+            val newQuantity = currentQuantity + quantity
+            productRef.setValue(newQuantity)
+        }.addOnFailureListener {
+            // Xử lý lỗi nếu cần
+        }
+    }
+
+    fun decreaseCartItemQuantity(user: FirebaseUser, productId: String, quantity: Int) {
+        val cartRef = databaseReference.child(user.uid).child("cart")
+        val productRef = cartRef.child(productId).child("quantity")
+
+        productRef.get().addOnSuccessListener { snapshot ->
+            val currentQuantity = snapshot.getValue(Int::class.java) ?: 1
+            val newQuantity = currentQuantity - quantity
+            if (newQuantity > 0) {
+                // Nếu số lượng mới > 0, cập nhật số lượng
+                productRef.setValue(newQuantity)
             } else {
-                // Nếu sản phẩm chưa có trong giỏ hàng, thêm mới với số lượng 1
-                cartRef.child(product.id).setValue(product)
+                // Nếu số lượng <= 0, xóa sản phẩm khỏi giỏ hàng
+                cartRef.child(productId).removeValue()
             }
+        }.addOnFailureListener {
+            // Xử lý lỗi nếu cần
         }
     }
 
-    fun removeCartItem(user: FirebaseUser, product: ProductDetails) {
-        val cartRef = databaseReference.child(user.uid).child("cart")
-        cartRef.child(product.id).removeValue()
-    }
-
-    // Phương thức để cập nhật số lượng sản phẩm trong giỏ hàng
-    fun updateCartItemQuantity(user: FirebaseUser, productId: String, quantity: Int) {
-        val cartRef = databaseReference.child(user.uid).child("cart")
-        cartRef.child(productId).child("quantity").setValue(quantity)
-    }
-
-    fun getCartItems(
-        user: FirebaseUser,
-        callback: (List<ProductDetails>) -> Unit,
-        onError: (DatabaseError) -> Unit
-    ) {
-        val cartRef = databaseReference.child(user.uid).child("cart")
-        cartRef.get().addOnSuccessListener { dataSnapshot ->
-            val cartList = mutableListOf<ProductDetails>()
-            for (snapshot in dataSnapshot.children) {
-                val product = snapshot.getValue(ProductDetails::class.java)
-                product?.let { cartList.add(it) }
+    //profile
+    fun saveUserProfile(user: FirebaseUser, userProfile: UserProfile) {
+        val userRef = databaseReference.child(user.uid).child("userInfor")
+        userRef.setValue(userProfile)
+            .addOnSuccessListener {
+                // Lưu thành công
             }
-            callback(cartList)
+            .addOnFailureListener { exception ->
+                // Xử lý lỗi nếu cần
+            }
+    }
+
+    fun getUserProfile(user: FirebaseUser, callback: (UserProfile?) -> Unit, onError: (DatabaseError) -> Unit) {
+        val userRef = databaseReference.child(user.uid).child("userInfor")
+        userRef.get().addOnSuccessListener { snapshot ->
+            val userProfile = snapshot.getValue(UserProfile::class.java)
+            callback(userProfile)
         }.addOnFailureListener { exception ->
             onError(DatabaseError.fromException(exception))
         }
     }
 
-
-    fun calculateTotalCartPrice(
-        user: FirebaseUser,
-        callback: (Double) -> Unit,
-        onError: (DatabaseError) -> Unit
-    ) {
-        val cartRef = databaseReference.child(user.uid).child("cart")
-        cartRef.get().addOnSuccessListener { dataSnapshot ->
-            var total = 0.0
-            for (snapshot in dataSnapshot.children) {
-                val product = snapshot.getValue(ProductDetails::class.java)
-                if (product != null && product.quantity > 0) {
-                    total += product.price * product.quantity
-                }
-            }
-            callback(total)
-        }.addOnFailureListener { exception ->
-            onError(DatabaseError.fromException(exception))
-        }
-    }*/
 }

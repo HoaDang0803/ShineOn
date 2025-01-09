@@ -1,6 +1,7 @@
 package com.yasinmaden.ecommerceapp.ui.detail
 
 import com.yasinmaden.ecommerceapp.data.model.product.ProductDetails
+import com.yasinmaden.ecommerceapp.ui.profile.ProfileContract.UiEffect
 
 object DetailContract {
     data class UiState(
@@ -13,6 +14,8 @@ object DetailContract {
         data class OnFavoriteClicked(val product: ProductDetails) : UiAction()
         data class OnCartClicked(val product: ProductDetails) : UiAction()
     }
+
     sealed class UiEffect {
+        data class ShowToast(val message: String) : UiEffect()
     }
 }

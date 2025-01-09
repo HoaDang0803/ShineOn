@@ -1,6 +1,7 @@
 package com.yasinmaden.ecommerceapp.ui.auth.signup
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -16,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -30,7 +33,8 @@ import com.yasinmaden.ecommerceapp.ui.components.LoadingBar
 import com.yasinmaden.ecommerceapp.ui.auth.signup.SignUpContract.UiAction
 import com.yasinmaden.ecommerceapp.ui.auth.signup.SignUpContract.UiEffect
 import com.yasinmaden.ecommerceapp.ui.auth.signup.SignUpContract.UiState
-import com.yasinmaden.ecommerceapp.ui.theme.Pink80
+import com.yasinmaden.ecommerceapp.ui.theme.DarkBlue
+import com.yasinmaden.ecommerceapp.ui.theme.LightBlue
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -75,18 +79,21 @@ fun SignUpContent(
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.TopCenter,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top, // Điều chỉnh căn dọc trong cột
             modifier = Modifier.padding(16.dp)
+                .padding(top = 180.dp)
+
         ) {
             Text(
                 text = "Đăng ký",
                 style = MaterialTheme.typography.titleLarge,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Pink80
+                color = DarkBlue
             )
 
             OutlinedTextField(
@@ -101,7 +108,7 @@ fun SignUpContent(
             OutlinedTextField(
                 value = uiState.password,
                 onValueChange = { onAction(UiAction.OnPasswordChange(it)) },
-                label = { Text(text = "Password", fontSize = 13.sp) },
+                label = { Text(text = "Mật khẩu", fontSize = 13.sp) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
@@ -111,14 +118,18 @@ fun SignUpContent(
         }
         Button(
             onClick = { onAction(UiAction.OnSignUpClick) },
-            shape = RoundedCornerShape(0.dp),
+            shape = RoundedCornerShape(50.dp),
             modifier = Modifier
+                .padding(16.dp)
+                .padding(bottom = 80.dp)
                 .align(Alignment.BottomCenter) // Align the button to the bottom center
                 .fillMaxWidth() // Make the button full width
-                .padding(top = 16.dp) // Optional padding for spacing
-                .size(height = 75.dp, width = 150.dp)
+                .padding(bottom = 100.dp) // Optional padding for spacing
+                .size(height = 55.dp, width = 150.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7faedd)) // Đổi màu nền thành LightBlue
+
         ) {
-            Text(text = "Đăng ký", fontSize = 17.sp, style = MaterialTheme.typography.titleLarge)
+            Text(text = "Đăng ký", fontSize = 15.sp, style = MaterialTheme.typography.titleMedium)
         }
     }
 
